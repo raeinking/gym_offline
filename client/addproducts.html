@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .form-group img {
+            max-width: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .form-group button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+        .tag-list {
+            margin-top: 20px;
+        }
+        .tag-list input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+        .tag-list button {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        .tag-list button:hover {
+            background-color: #1e87d4;
+        }
+        .tag-container {
+            margin-top: 10px;
+        }
+        .tag-container span {
+            display: inline-block;
+            background-color: #e0e0e0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 5px;
+            font-size: 14px;
+        }
+        .existing-tags {
+            margin-top: 10px;
+        }
+        .existing-tags label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Product</h1>
+        <form id="add-product-form">
+            <div class="form-group">
+                <label for="name">Product Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="serialNumber">Serial Number</label>
+                <input type="text" id="serialNumber" name="serialNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="qrCode">QR Code (URL)</label>
+                <input type="text" id="qrCode" name="qrCode">
+            </div>
+            <div class="form-group">
+                <label for="image">Product Image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                <img id="image-preview" alt="Image Preview" style="display: none;">
+            </div>
+            <div class="form-group">
+                <label for="tags">Tags</label>
+                <div class="existing-tags">
+                    <label>
+                        <input type="checkbox" name="tag" value="Membership"> Membership
+                    </label>
+                    <label>
+                        <input type="checkbox" name="tag" value="Training"> Training
+                    </label>
+                    <label>
+                        <input type="checkbox" name="tag" value="Classes"> Classes
+                    </label>
+                </div>
+                <div class="tag-container" id="tag-container"></div>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Product</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Image preview functionality
+        document.getElementById('image').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('image-preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle tag input
+        document.getElementById('tag-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const tagValue = this.value.trim();
+                if (tagValue) {
+                    addTag(tagValue);
+                    this.value = '';
+                }
+            }
+        });
+
+        function addTag(tag) {
+            const tagContainer = document.getElementById('tag-container');
+            const tagElement = document.createElement('span');
+            tagElement.textContent = tag;
+            tagContainer.appendChild(tagElement);
+        }
+
+        // Form submission handling
+        document.getElementById('add-product-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const imageFile = formData.get('image');
+
+            // Create a new FormData object for the image upload
+            const imageFormData = new FormData();
+            imageFormData.append('image', imageFile);
+
+            try {
+                // Upload the image to the server
+                const imageResponse = await fetch('http://localhost:3005/api/upload', {
+                    method: 'POST',
+                    body: imageFormData
+                });
+
+                if (!imageResponse.ok) {
+                    throw new Error('Image upload failed');
+                }
+
+                const imageResult = await imageResponse.json();
+                const imageUrl = imageResult.url;
+
+                // Create product data including the image URL
+                const productData = {
+                    name: formData.get('name'),
+                    description: formData.get('description'),
+                    price: parseFloat(formData.get('price')),
+                    serialNumber: formData.get('serialNumber'),
+                    qrCode: formData.get('qrCode'),
+                    image: imageUrl,
+                    tags: [
+                        ...Array.from(document.getElementById('tag-container').children).map(tag => tag.textContent),
+                        ...Array.from(document.querySelectorAll('input[name="tag"]:checked')).map(tag => tag.value)
+                    ]
+                };
+
+                // Add the product
+                const productResponse = await fetch('http://localhost:3005/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
+
+                if (productResponse.ok) {
+                    const result = await productResponse.json();
+                    console.log('Product added:', result);
+                    alert('Product added successfully!');
+                } else {
+                    console.error('Error adding product');
+                    alert('An error occurred while adding the product.');
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert('A network error occurred.');
+            }
+        });
+    </script>
+</body>
+</html>

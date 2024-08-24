@@ -3,10 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS Page</title>
+    <title>Gym POS System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .pos-container {
+            background-color: #fff;
+            /* border-radius: 8px; */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            /* min-height: 10; */
+            /* max-width: 1200px; */
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        .checkout, .products {
+            width: 48%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .checkout-btn, .back-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            background-color: #ff0000;
+            margin-bottom: 10px;
+        }
+
+        .checkout-btn:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn:hover {
+            background-color: #d40000;
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .product-list button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #2196F3;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .product-list button img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .product-list button:hover {
+            background-color: #1e87d4;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tags button {
+            background-color: #555;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .tags button:hover {
+            background-color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>POS System</h1>
-    <p>Content for the POS system page goes here.</p>
+    <div class="pos-container">
+        <!-- Checkout Section -->
+        <div class="checkout">
+            <h1>Checkout</h1>
+            <!-- Checkout Table -->
+            <table id="checkout-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="checkout-items">
+                    <!-- Items added to checkout will appear here -->
+                </tbody>
+            </table>
+
+            <!-- Total price -->
+            <div class="total" id="total">$0</div>
+
+            <!-- Back and Checkout buttons -->
+            <button class="back-btn" onclick="goBack()">Go Back</button>
+            <button class="checkout-btn" onclick="confirmCheckout()">Checkout</button>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products">
+            <h1>Products</h1>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="search" placeholder="Search products..." oninput="filterProducts()">
+            </div>
+
+            <!-- Product Tags -->
+            <div class="tags">
+                <button onclick="filterByTag('All')">All</button>
+                <button onclick="filterByTag('Membership')">Membership</button>
+                <button onclick="filterByTag('Training')">Training</button>
+                <button onclick="filterByTag('Classes')">Classes</button>
+            </div>
+
+            <div class="product-list" id="product-list">
+                <!-- Product buttons with images -->
+                <button class="product-item" data-tag="Membership" onclick="addToCheckout('Membership', 50)">
+                    <img src="https://via.placeholder.com/100" alt="Membership">
+                    Membership - $50
+                </button>
+                <button class="product-item" data-tag="Training" onclick="addToCheckout('Personal Training', 30)">
+                    <img src="https://via.placeholder.com/100" alt="Personal Training">
+                    Personal Training - $30
+                </button>
+                <button class="product-item" data-tag="Classes" onclick="addToCheckout('Yoga Class', 20)">
+                    <img src="https://via.placeholder.com/100" alt="Yoga Class">
+                    Yoga Class - $20
+                </button>
+                <!-- Add more products as needed -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let checkoutItems = [];
+
+        function addToCheckout(name, price) {
+            const existingItem = checkoutItems.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                checkoutItems.push({ name, price, quantity: 1 });
+            }
+            updateCheckout();
+        }
+
+        function removeFromCheckout(name) {
+            checkoutItems = checkoutItems.filter(item => item.name !== name);
+            updateCheckout();
+        }
+
+        function updateCheckout() {
+            const checkoutContainer = document.getElementById('checkout-items');
+            checkoutContainer.innerHTML = '';
+
+            let total = 0;
+
+            checkoutItems.forEach(item => {
+                const itemTotal = item.quantity * item.price;
+                total += itemTotal;
+
+                const itemRow = document.createElement('tr');
+                itemRow.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>
+                        <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.name}', this.value)">
+                    </td>
+                    <td>$${itemTotal}</td>
+                    <td>
+                        <button onclick="removeFromCheckout('${item.name}')">Remove</button>
+                    </td>
+                `;
+
+                checkoutContainer.appendChild(itemRow);
+            });
+
+            document.getElementById('total').innerText = `$${total}`;
+        }
+
+        function updateQuantity(name, quantity) {
+            const item = checkoutItems.find(item => item.name === name);
+            if (item) {
+                item.quantity = parseInt(quantity);
+                updateCheckout();
+            }
+        }
+
+        function filterProducts() {
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const productButtons = document.querySelectorAll('.product-list button');
+
+            productButtons.forEach(button => {
+                const productName = button.textContent.toLowerCase();
+                if (productName.includes(searchQuery)) {
+                    button.style.display = 'flex';
+                } else {
+                    button.style.display = 'none';
+                }
+            });
+        }
+
+        function filterByTag(tag) {
+            const productButtons = document.querySelectorAll('.product-item');
+
+            productButtons.forEach(button => {
+                if (tag === 'All' || button.getAttribute('data-tag') === tag) {
+                    button.style.display = 'flex';
+                } else {
+                    button.style.display = 'none';
+                }
+            });
+        }
+
+        function goBack() {
+            if (checkoutItems.length > 0) {
+                if (confirm('Are you sure you want to go back? All current items in the checkout will be lost.')) {
+                    checkoutItems = [];
+                    updateCheckout();
+                }
+            }
+        }
+
+        function confirmCheckout() {
+            if (checkoutItems.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            if (confirm('Are you sure you want to proceed with checkout?')) {
+                checkout();
+            }
+        }
+
+        function checkout() {
+        let totalAmount = checkoutItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+        let saleEntry = {
+            date: new Date().toLocaleString(),
+            items: checkoutItems,
+            total: totalAmount
+        };
+
+        saveSale(saleEntry);
+        printCheckout();
+        clearCheckout();
+    }
+
+    async function saveSale(saleEntry) {
+    try {
+        const response = await fetch('http://localhost:3005/api/sale', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(saleEntry)
+        });
+
+        if (response.ok) {
+            console.log('Sale saved successfully');
+        } else {
+            console.error('Error saving sale');
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+    }
+}
+
+        function printCheckout() {
+            let printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head><title>Receipt</title></head>
+                    <body>
+                        <h1>Receipt</h1>
+                        <p>Date: ${new Date().toLocaleString()}</p>
+                        <table border="1" cellpadding="10" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${checkoutItems.map(item => `
+                                    <tr>
+                                        <td>${item.name}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>$${item.price}</td>
+                                        <td>$${item.quantity * item.price}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <h2>Total: $${checkoutItems.reduce((total, item) => total + item.price * item.quantity, 0)}</h2>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function clearCheckout() {
+            checkoutItems = [];
+            updateCheckout();
+            alert('Thank you for your purchase!');
+        }
+
+        // // Make the POS full screen on load
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     if (document.documentElement.requestFullscreen) {
+        //         document.documentElement.requestFullscreen();
+        //     }
+        // });
+    </script>
 </body>
 </html>
