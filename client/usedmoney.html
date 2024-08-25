@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Used Money Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+
+        .form-group button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+        .bill-list {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .bill-list th, .bill-list td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .bill-list th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        .bill-list td {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Used Money Tracker</h1>
+
+        <div class="form-group">
+            <label for="bill-name">Bill Name:</label>
+            <input type="text" id="bill-name" placeholder="e.g., Electricity">
+        </div>
+
+        <div class="form-group">
+            <label for="bill-amount">Amount:</label>
+            <input type="number" id="bill-amount" placeholder="e.g., 39">
+        </div>
+
+        <div class="form-group">
+            <button onclick="addBill()">Add Bill</button>
+        </div>
+
+        <h2>Bill Payments</h2>
+        <table class="bill-list" id="bill-list">
+            <thead>
+                <tr>
+                    <th>Bill Name</th>
+                    <th>Amount ($)</th>
+                    <th>Date Added</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Bills will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function addBill() {
+            const billName = document.getElementById('bill-name').value;
+            const billAmount = document.getElementById('bill-amount').value;
+        
+            if (billName === '' || billAmount === '') {
+                alert('Please fill in both fields.');
+                return;
+            }
+        
+            const response = await fetch('http://localhost:3005/add-bill', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: billName, amount: billAmount })
+            });
+        
+            if (response.ok) {
+                const newBill = await response.json();
+                const billList = document.getElementById('bill-list').getElementsByTagName('tbody')[0];
+                const newRow = billList.insertRow();
+        
+                const cell1 = newRow.insertCell(0);
+                const cell2 = newRow.insertCell(1);
+                const cell3 = newRow.insertCell(2);
+        
+                cell1.innerHTML = newBill.name;
+                cell2.innerHTML = `$${newBill.amount}`;
+                cell3.innerHTML = new Date(newBill.dateAdded).toLocaleDateString();
+        
+                document.getElementById('bill-name').value = '';
+                document.getElementById('bill-amount').value = '';
+            } else {
+                alert('Failed to add bill.');
+            }
+        }
+        
+    </script>
+</body>
+</html>

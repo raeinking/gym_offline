@@ -5,33 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <title>Electron App</title>
+
+  <style>
+
+    body {
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      width: 100%;
+      max-width: 1200px;
+      box-sizing: border-box;
+    }
+
+    .grid-item {
+      background-color: #2e467c; /* Blue background */
+      padding: 20px;
+      text-align: center;
+      border-radius: 15px; /* Rounded corners */
+      box-shadow: 0 14px 16px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+      color: white; /* White text */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
+    }
+    
+    .grid-item img {
+      width: 60px; /* Consistent icon size */
+      height: 60px;
+      margin-bottom: 20px;
+      filter: invert(100%); /* Inverts the colors, making black white */
+    }
+    
+    .grid-item p {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .grid-item:hover {
+      background-color: #334D84; /* Darker blue on hover */
+    }
+
+    main {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    a {
+      list-style: none;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
   <main>
     <div class="container">
-        <a class="grid-item" href="pos.html">
-          <img src="./img/products.jpg" alt="Image 1">
-          <p>Point Of Sale</p>
-        </a>
-      <a class="grid-item" href="addproducts.html"> 
-        <img src="image2.jpg" alt="Image 2">
+      <a class="grid-item" href="pos.html">
+        <img src="./img/point-of-sale.png" alt="POS">
+        <p>Point Of Sale</p>
+      </a>
+      <a class="grid-item" href="addproducts.html">
+        <img src="./img/add-to-cart.png" alt="Add Products">
         <p>Add Products</p>
       </a>
-      <a class="grid-item" href="pos.html">
-        <img src="image3.jpg" alt="Image 3">
-        <p>Text for image 3</p>
+      <a class="grid-item" href="storage.html">
+        <img src="image3.jpg" alt="Storage">
+        <p>Storage</p>
       </a>
-      <a class="grid-item" href="pos.html">
-        <img src="image4.jpg" alt="Image 4">
-        <p>Text for image 4</p>
+      <a class="grid-item" href="usedmoney.html">
+        <img src="image4.jpg" alt="Used Money">
+        <p>Used Money</p>
       </a>
-      <a class="grid-item" href="pos.html">
-        <img src="image5.jpg" alt="Image 5">
-        <p>Text for image 5</p>
+      <a class="grid-item" href="addTags.html">
+        <img src="image5.jpg" alt="Add Tags">
+        <p>Add Tags</p>
       </a>
-      <a class="grid-item" href="pos.html">
-        <img src="image6.jpg" alt="Image 6">
-        <p>Text for image 6</p>
+      <a class="grid-item" href="DataBase.html">
+        <img src="image6.jpg" alt="Data Base">
+        <p>Data Base</p>
       </a>
     </div>
   </main>

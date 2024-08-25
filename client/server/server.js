@@ -73,6 +73,7 @@ const ProductSchema = new mongoose.Schema({
     price: Number,
     serialNumber: String,
     qrCode: String,
+    quantity: String,
     image: String,
     tags: [String]
 });
@@ -96,6 +97,29 @@ app.post('/api/products', async (req, res) => {
         res.status(500).send({ error: 'An error occurred while saving the product.' });
     }
 });
+
+
+
+const billSchema = new mongoose.Schema({
+    name: String,
+    amount: Number,
+    dateAdded: { type: Date, default: Date.now }
+});
+
+const Bill = mongoose.model('Bill', billSchema);
+
+app.post('/add-bill', async (req, res) => {
+    const { name, amount } = req.body;
+    const newBill = new Bill({ name, amount });
+    await newBill.save();
+    res.status(201).send(newBill);
+});
+
+app.get('/bills', async (req, res) => {
+    const bills = await Bill.find();
+    res.status(200).json(bills);
+});
+
 
 // Serve static files from 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

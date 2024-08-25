@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,41 +14,54 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
+
         .container {
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             padding: 20px;
             max-width: 800px;
             width: 100%;
+            position: relative;
         }
+
         h1 {
-            color: #333;
+            color: #444;
             margin-bottom: 20px;
             text-align: center;
+            font-size: 24px;
+            letter-spacing: 1px;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #555;
         }
-        .form-group input, .form-group textarea {
+
+        .form-group input,
+        .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
             border-radius: 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
         }
+
         .form-group img {
             max-width: 200px;
             margin-top: 10px;
             border-radius: 5px;
         }
+
         .form-group button {
             background-color: #4CAF50;
             color: white;
@@ -56,53 +70,100 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
+
         .form-group button:hover {
             background-color: #45a049;
         }
+
         .tag-list {
             margin-top: 20px;
         }
-        .tag-list input {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            margin-right: 10px;
-        }
-        .tag-list button {
-            background-color: #2196F3;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin-right: 5px;
-            cursor: pointer;
-        }
-        .tag-list button:hover {
-            background-color: #1e87d4;
-        }
+
         .tag-container {
             margin-top: 10px;
         }
-        .tag-container span {
-            display: inline-block;
-            background-color: #e0e0e0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-right: 5px;
-            font-size: 14px;
-        }
+
         .existing-tags {
             margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
+
+        .existing-tags input[type="checkbox"] {
+            display: none;
+        }
+
         .existing-tags label {
-            margin-right: 10px;
+            position: relative;
+            background-color: #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+
+        .existing-tags input[type="checkbox"]:checked + label {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .existing-tags label:hover {
+            background-color: #d0d0d0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                font-size: 14px;
+            }
+
+            .form-group button {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .existing-tags label {
+                font-size: 12px;
+                padding: 8px 15px;
+            }
+        }
+
+        /* Back button styling */
+        .back-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            line-height: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #e53935;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
+        <button class="back-button" id="back-button">&times;</button>
         <h1>Add New Product</h1>
         <form id="add-product-form">
             <div class="form-group">
@@ -116,6 +177,10 @@
             <div class="form-group">
                 <label for="price">Price</label>
                 <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" required>
             </div>
             <div class="form-group">
                 <label for="serialNumber">Serial Number</label>
@@ -133,15 +198,12 @@
             <div class="form-group">
                 <label for="tags">Tags</label>
                 <div class="existing-tags">
-                    <label>
-                        <input type="checkbox" name="tag" value="Membership"> Membership
-                    </label>
-                    <label>
-                        <input type="checkbox" name="tag" value="Training"> Training
-                    </label>
-                    <label>
-                        <input type="checkbox" name="tag" value="Classes"> Classes
-                    </label>
+                    <input type="checkbox" id="tag1" name="tag" value="Membership">
+                    <label for="tag1">Membership</label>
+                    <input type="checkbox" id="tag2" name="tag" value="Training">
+                    <label for="tag2">Training</label>
+                    <input type="checkbox" id="tag3" name="tag" value="Classes">
+                    <label for="tag3">Classes</label>
                 </div>
                 <div class="tag-container" id="tag-container"></div>
             </div>
@@ -153,11 +215,11 @@
 
     <script>
         // Image preview functionality
-        document.getElementById('image').addEventListener('change', function() {
+        document.getElementById('image').addEventListener('change', function () {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     const preview = document.getElementById('image-preview');
                     preview.src = event.target.result;
                     preview.style.display = 'block';
@@ -166,27 +228,8 @@
             }
         });
 
-        // Handle tag input
-        document.getElementById('tag-input').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                const tagValue = this.value.trim();
-                if (tagValue) {
-                    addTag(tagValue);
-                    this.value = '';
-                }
-            }
-        });
-
-        function addTag(tag) {
-            const tagContainer = document.getElementById('tag-container');
-            const tagElement = document.createElement('span');
-            tagElement.textContent = tag;
-            tagContainer.appendChild(tagElement);
-        }
-
         // Form submission handling
-        document.getElementById('add-product-form').addEventListener('submit', async function(event) {
+        document.getElementById('add-product-form').addEventListener('submit', async function (event) {
             event.preventDefault();
             const formData = new FormData(this);
             const imageFile = formData.get('image');
@@ -214,6 +257,7 @@
                     name: formData.get('name'),
                     description: formData.get('description'),
                     price: parseFloat(formData.get('price')),
+                    quantity: parseInt(formData.get('quantity')),
                     serialNumber: formData.get('serialNumber'),
                     qrCode: formData.get('qrCode'),
                     image: imageUrl,
@@ -232,19 +276,28 @@
                     body: JSON.stringify(productData)
                 });
 
-                if (productResponse.ok) {
-                    const result = await productResponse.json();
-                    console.log('Product added:', result);
-                    alert('Product added successfully!');
-                } else {
-                    console.error('Error adding product');
-                    alert('An error occurred while adding the product.');
+                if (!productResponse.ok) {
+                    throw new Error('Failed to add product');
                 }
+
+                alert('Product added successfully!');
+                // Reset the form
+                this.reset();
+                document.getElementById('image-preview').style.display = 'none';
+                document.getElementById('tag-container').innerHTML = '';
             } catch (error) {
-                console.error('Network error:', error);
-                alert('A network error occurred.');
+                console.error(error);
+                alert('There was an error adding the product.');
+            }
+        });
+
+        // Back button handling
+        document.getElementById('back-button').addEventListener('click', function () {
+            if (confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
+                window.history.back();
             }
         });
     </script>
 </body>
+
 </html>

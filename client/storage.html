@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            box-sizing: border-box;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .go-back {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .go-back:hover {
+            background-color: #0056b3;
+        }
+
+        .controls .search-bar {
+            flex: 1;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .controls .search-bar input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .controls .sort-controls select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+        table tr {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #e6f7ff;
+        }
+
+        table img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            width: 400px;
+        }
+
+        .popup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .popup .close-btn:hover {
+            color: #d40000;
+        }
+
+        .popup h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .popup label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .popup input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .popup button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .popup button:hover {
+            background-color: #45a049;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .priority-high {
+            color: red;
+        }
+
+        .priority-low {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="#" class="go-back">Go Back</a>
+
+        <h1>All Projects</h1>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-bar">
+                <input type="text" id="search" placeholder="Search projects..." oninput="filterProjects()">
+            </div>
+            <div class="sort-controls">
+                <select id="sort" onchange="sortProjects()">
+                    <option value="none">Sort By</option>
+                    <option value="name">Name</option>
+                    <option value="price">Price</option>
+                    <option value="quantity">Quantity</option>
+                    <option value="startDay">Start Day</option>
+                    <option value="expireDay">Expire Day</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Project List (Table) -->
+        <table id="project-list">
+            <thead>
+                <tr>
+                    <th onclick="sortTableByColumn('image')">Image</th>
+                    <th onclick="sortTableByColumn('name')">Name</th>
+                    <th onclick="sortTableByColumn('price')">Price</th>
+                    <th onclick="sortTableByColumn('quantity')">Quantity</th>
+                    <th onclick="sortTableByColumn('startDay')">Start Day</th>
+                    <th onclick="sortTableByColumn('expireDay')">Expire Day</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Projects will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+    <!-- Popup for Editing Product Details -->
+    <div class="popup" id="popup">
+        <button class="close-btn" onclick="closePopup()">X</button>
+        <h2>Edit Project</h2>
+        <label for="edit-expire-date">Expiration Date:</label>
+        <input type="date" id="edit-expire-date" placeholder="Expiration Date">
+        <label for="edit-quantity">Quantity:</label>
+        <input type="number" id="edit-quantity" placeholder="Quantity" min="1">
+        <button onclick="saveChanges()">Save Changes</button>
+    </div>
+
+    <script>
+        const projects = [
+            {
+                image: 'https://via.placeholder.com/50',
+                name: 'Managers Meeting Q1',
+                price: 300,
+                quantity: 10,
+                startDay: '2024-07-16',
+                expireDay: '2024-09-01'
+            },
+            {
+                image: 'https://via.placeholder.com/50',
+                name: 'Homepage Video',
+                price: 200,
+                quantity: 8,
+                startDay: '2024-07-16',
+                expireDay: '2024-10-01'
+            },
+            // Add more projects as needed
+        ];
+
+        let selectedProject = null;
+
+        function renderProjects() {
+            const projectList = document.getElementById('project-list').getElementsByTagName('tbody')[0];
+            projectList.innerHTML = '';
+
+            projects.forEach(project => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${project.image}" alt="${project.name}"></td>
+                    <td>${project.name}</td>
+                    <td>${project.price}</td>
+                    <td>${project.quantity}</td>
+                    <td>${project.startDay}</td>
+                    <td>${project.expireDay}</td>
+                `;
+                row.onclick = () => openPopup(project);
+                projectList.appendChild(row);
+            });
+        }
+
+        function filterProjects() {
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const rows = document.querySelectorAll('#project-list tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+                for (let i = 1; i < cells.length; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(searchQuery)) {
+                        match = true;
+                        break;
+                    }
+                }
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        function sortProjects() {
+            const sortBy = document.getElementById('sort').value;
+            const sortedProjects = [...projects];
+        
+            sortedProjects.sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === 'price') {
+                    return a.price - b.price;
+                } else if (sortBy === 'quantity') {
+                    return a.quantity - b.quantity;
+                } else if (sortBy === 'startDay') {
+                    return new Date(a.startDay) - new Date(b.startDay);
+                } else if (sortBy === 'expireDay') {
+                    return new Date(a.expireDay) - new Date(b.expireDay);
+                }
+                return 0;
+            });
+        
+            // Re-render the table with the sorted data
+            const projectList = document.getElementById('project-list').getElementsByTagName('tbody')[0];
+            projectList.innerHTML = '';
+        
+            sortedProjects.forEach(project => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${project.image}" alt="${project.name}"></td>
+                    <td>${project.name}</td>
+                    <td>${project.price}</td>
+                    <td>${project.quantity}</td>
+                    <td>${project.startDay}</td>
+                    <td>${project.expireDay}</td>
+                `;
+                row.onclick = () => openPopup(project);
+                projectList.appendChild(row);
+            });
+        }
+        
+        function openPopup(project) {
+            selectedProject = project;
+            document.getElementById('edit-expire-date').value = project.expireDay;
+            document.getElementById('edit-quantity').value = project.quantity;
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function saveChanges() {
+            const expireDay = document.getElementById('edit-expire-date').value;
+            const quantity = document.getElementById('edit-quantity').value;
+
+            if (selectedProject) {
+                selectedProject.expireDay = expireDay;
+                selectedProject.quantity = quantity;
+            }
+
+            closePopup();
+            renderProjects();
+        }
+
+        renderProjects();
+
+        let currentSortColumn = null;
+let sortDirection = 'asc'; // default sort direction
+
+function sortTableByColumn(column) {
+    if (currentSortColumn === column) {
+        // If the same column is clicked, toggle the sort direction
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        // Otherwise, set the sort direction to ascending and update the current column
+        sortDirection = 'asc';
+        currentSortColumn = column;
+    }
+
+    projects.sort((a, b) => {
+        let valueA = a[column];
+        let valueB = b[column];
+
+        // Convert to appropriate data type
+        if (column === 'price' || column === 'quantity') {
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+        } else if (column === 'startDay' || column === 'expireDay') {
+            valueA = new Date(valueA);
+            valueB = new Date(valueB);
+        }
+
+        if (sortDirection === 'asc') {
+            return valueA > valueB ? 1 : -1;
+        } else {
+            return valueA < valueB ? 1 : -1;
+        }
+    });
+
+    // Re-render the table with the sorted data
+    renderTable();
+}
+
+function renderTable() {
+    const projectList = document.getElementById('project-list').getElementsByTagName('tbody')[0];
+    projectList.innerHTML = '';
+
+    projects.forEach(project => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><img src="${project.image}" alt="${project.name}"></td>
+            <td>${project.name}</td>
+            <td>${project.price}</td>
+            <td>${project.quantity}</td>
+            <td>${project.startDay}</td>
+            <td>${project.expireDay}</td>
+        `;
+        row.onclick = () => openPopup(project);
+        projectList.appendChild(row);
+    });
+}
+    </script>
+</body>
+</html>
