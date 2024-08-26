@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <title>Electron App</title>
-
   <style>
+    
+    @font-face {
+      font-family: Rabar;
+      src: url('./font/Rabar_020.ttf');
+    }
 
     body {
       background-color: #f0f0f0;
@@ -17,8 +21,8 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      font-family: Rabar;
     }
-
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -53,11 +57,13 @@
     
     .grid-item p {
       margin: 0;
-      font-size: 16px;
+      font-size: clamp(1rem , 0.3043rem + 3.4783vw , 24px);
+      color: white;
+      text-wrap: nowrap;
     }
 
     .grid-item:hover {
-      background-color: #334D84; /* Darker blue on hover */
+      background-color: #3e5da1; /* Darker blue on hover */
     }
 
     main {
@@ -78,27 +84,27 @@
     <div class="container">
       <a class="grid-item" href="pos.html">
         <img src="./img/point-of-sale.png" alt="POS">
-        <p>Point Of Sale</p>
+        <p>پارە وەرگرتن</p>
       </a>
       <a class="grid-item" href="addproducts.html">
         <img src="./img/add-to-cart.png" alt="Add Products">
-        <p>Add Products</p>
+        <p>زياد کردنى کالا</p>
       </a>
       <a class="grid-item" href="storage.html">
-        <img src="image3.jpg" alt="Storage">
-        <p>Storage</p>
+        <img src="./img/open-box.png" alt="Storage">
+        <p>مەغزەن</p>
       </a>
       <a class="grid-item" href="usedmoney.html">
-        <img src="image4.jpg" alt="Used Money">
-        <p>Used Money</p>
+        <img src="./img/expense.png" alt="Used Money">
+        <p>پارە بەکارهێنان</p>
       </a>
       <a class="grid-item" href="addTags.html">
-        <img src="image5.jpg" alt="Add Tags">
-        <p>Add Tags</p>
+        <img src="./img/categorization.png" alt="Add Tags">
+        <p>زياد کردنى بەش</p>
       </a>
       <a class="grid-item" href="DataBase.html">
-        <img src="image6.jpg" alt="Data Base">
-        <p>Data Base</p>
+        <img src="./img/dashboard.png" alt="Data Base">
+        <p>داشبۆرد</p>
       </a>
     </div>
   </main>

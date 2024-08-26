@@ -6,8 +6,8 @@
     <title>Gym POS System</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -18,8 +18,8 @@
         }
 
         .pos-container {
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             padding: 20px;
             width: 100%;
             height: 100vh;
@@ -27,92 +27,111 @@
             flex-direction: row;
             justify-content: space-between;
             box-sizing: border-box;
-            position: relative; /* Added to position the X button */
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .checkout, .products {
-            width: 48%;
+        .products {
+            width: 65%;
             height: 100%;
             display: flex;
             flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .checkout {
+            width: 35%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #f0f2f5;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 15px;
         }
 
         h1 {
-            color: #333;
+            color: #343a40;
             margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .total {
+            font-size: 24px;
             font-weight: bold;
-            font-size: 18px;
-            text-align: right;
-            margin-top: 20px;
+            text-align: center;
         }
 
         .back-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: transparent;
-            color: #ff0000;
-            font-size: 24px;
+            top: 20px;
+            left: 20px;
+            background-color: #ff6b6b;
+            color: #ffffff;
+            font-size: 20px;
             border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .back-btn:hover {
-            color: #d40000;
+            background-color: #ff4c4c;
         }
 
         .checkout-btn {
-            background-color: #4CAF50;
+            background-color: #28a745;
             color: white;
-            padding: 10px;
+            padding: 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             width: 100%;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
             margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
 
         .checkout-btn:hover {
-            background-color: #45a049;
+            background-color: #218838;
         }
 
         .product-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
+            gap: 15px;
             overflow-y: auto;
+            padding: 10px;
         }
 
         .product-list button {
+            background-color: #007bff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #2196F3;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
+            justify-content: center;
+            aspect-ratio: 1 / 1;
         }
 
         .product-list button img {
             width: 100px;
             height: 100px;
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
         }
 
         .product-list button:hover {
-            background-color: #1e87d4;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .search-bar {
@@ -123,10 +142,11 @@
 
         .search-bar input[type="text"] {
             width: 80%;
-            padding: 10px;
+            padding: 15px;
             font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            border-radius: 30px;
+            border: 1px solid #ced4da;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .tags {
@@ -137,167 +157,243 @@
         }
 
         .tags button {
-            background-color: #555;
+            background-color: #6c757d;
             color: white;
-            padding: 10px;
+            padding: 10px 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         .tags button:hover {
-            background-color: #333;
-        }
-          /* Back button styling */
-          .back-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 20px;
-            line-height: 30px;
-            text-align: center;
-            cursor: pointer;
+            background-color: #5a6268;
         }
 
-        .back-button:hover {
-            background-color: #e53935;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 16px;
         }
+
+        table th, table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        .qty-btn {
+            background-color: #ffc107;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .qty-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        .checkout-footer {
+            margin-top: auto;
+        }
+
+        .total-container {
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .total-container span {
+            display: block;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        .discount-input {
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
     </style>
 </head>
 <body>
     <div class="pos-container">
-        <!-- X Button -->
-        <button class="back-button" id="back-button">&times;</button>
-
-        <!-- Checkout Section -->
+        <button class="back-btn" id="back-button">&larr;</button>
         <div class="checkout">
             <h1>Checkout</h1>
-            <!-- Checkout Table -->
             <table id="checkout-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Quantity</th>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Qty</th>
                         <th>Price</th>
                         <th>Remove</th>
                     </tr>
                 </thead>
                 <tbody id="checkout-items">
-                    <!-- Items added to checkout will appear here -->
                 </tbody>
             </table>
 
-            <!-- Total price -->
-            <div class="total" id="total">$0</div>
-
-            <!-- Checkout button -->
-            <button class="checkout-btn" onclick="confirmCheckout()">Checkout</button>
+            <div class="checkout-footer">
+                <div class="total-container">
+                    <span>Total Item(s): <span id="total-items">0</span></span>
+                    <span>Discount: 
+                        <input type="text" class="discount-input" id="discount" placeholder="amount" oninput="calculateTotal()">
+                    </span>
+                    <span>Total: $<span id="total">0</span></span>
+                </div>
+                <button class="checkout-btn" onclick="confirmCheckout()">Confirm Checkout</button>
+            </div>
         </div>
 
-        <!-- Products Section -->
         <div class="products">
-            <h1>Products</h1>
-
-            <!-- Search Bar -->
             <div class="search-bar">
-                <input type="text" id="search" placeholder="Search products..." oninput="filterProducts()">
+                <input type="text" id="search-bar" placeholder="Search products..." oninput="filterProducts()">
             </div>
-
-            <!-- Product Tags -->
             <div class="tags">
-                <button onclick="filterByTag('All')">All</button>
-                <button onclick="filterByTag('Membership')">Membership</button>
-                <button onclick="filterByTag('Training')">Training</button>
-                <button onclick="filterByTag('Classes')">Classes</button>
+                <button onclick="filterByTag('all')">All</button>
+                <button onclick="filterByTag('membership')">Membership</button>
+                <button onclick="filterByTag('training')">Training</button>
+                <button onclick="filterByTag('classes')">Classes</button>
             </div>
-
             <div class="product-list" id="product-list">
-                <!-- Product buttons with images -->
-                <button class="product-item" data-tag="Membership" onclick="addToCheckout('Membership', 50)">
+                <button onclick="addToCheckout('Membership', 100)">
                     <img src="https://via.placeholder.com/100" alt="Membership">
-                    Membership - $50
+                    Membership<br>$100
                 </button>
-                <button class="product-item" data-tag="Training" onclick="addToCheckout('Personal Training', 30)">
+                <button onclick="addToCheckout('Personal Training', 50)">
                     <img src="https://via.placeholder.com/100" alt="Personal Training">
-                    Personal Training - $30
+                    Personal Training<br>$50
                 </button>
-                <button class="product-item" data-tag="Classes" onclick="addToCheckout('Yoga Class', 20)">
+                <button onclick="addToCheckout('Yoga Class', 30)">
                     <img src="https://via.placeholder.com/100" alt="Yoga Class">
-                    Yoga Class - $20
+                    Yoga Class<br>$30
                 </button>
-                <!-- Add more products as needed -->
+                <button onclick="addToCheckout('Pilates Class', 40)">
+                    <img src="https://via.placeholder.com/100" alt="Pilates Class">
+                    Pilates Class<br>$40
+                </button>
+                <button onclick="addToCheckout('Swimming Class', 25)">
+                    <img src="https://via.placeholder.com/100" alt="Swimming Class">
+                    Swimming Class<br>$25
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        let checkoutItems = [];
+        function addToCheckout(item, price) {
+            const table = document.getElementById('checkout-items');
+            const row = document.createElement('tr');
 
-        function addToCheckout(name, price) {
-            const existingItem = checkoutItems.find(item => item.name === name);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                checkoutItems.push({ name, price, quantity: 1 });
-            }
-            updateCheckout();
+            const cell1 = document.createElement('td');
+            cell1.innerText = table.rows.length + 1;
+
+            const cell2 = document.createElement('td');
+            cell2.innerText = item;
+
+            const cell3 = document.createElement('td');
+            const qtyBtn = document.createElement('button');
+            qtyBtn.className = 'qty-btn';
+            qtyBtn.innerText = 1;
+            qtyBtn.onclick = function() {
+                this.innerText = parseInt(this.innerText) + 1;
+                calculateTotal();
+            };
+            cell3.appendChild(qtyBtn);
+
+            const cell4 = document.createElement('td');
+            cell4.innerText = `$${price}`;
+
+            const cell5 = document.createElement('td');
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerText = 'Remove';
+            removeBtn.onclick = function() {
+                table.removeChild(row);
+                updateItemNumbers();
+                calculateTotal();
+            };
+            cell5.appendChild(removeBtn);
+
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            row.appendChild(cell3);
+            row.appendChild(cell4);
+            row.appendChild(cell5);
+            row.setAttribute('data-price', price);
+
+            table.appendChild(row);
+
+            calculateTotal();
         }
 
-        function removeFromCheckout(name) {
-            checkoutItems = checkoutItems.filter(item => item.name !== name);
-            updateCheckout();
+        function updateItemNumbers() {
+            const rows = document.querySelectorAll('#checkout-items tr');
+            rows.forEach((row, index) => {
+                row.children[0].innerText = index + 1;
+            });
         }
 
-        function updateCheckout() {
-            const checkoutContainer = document.getElementById('checkout-items');
-            checkoutContainer.innerHTML = '';
+        function calculateTotal() {
+            const rows = document.querySelectorAll('#checkout-items tr');
+            let totalItems = 0;
+            let totalPrice = 0;
 
-            let total = 0;
-
-            checkoutItems.forEach(item => {
-                const itemTotal = item.quantity * item.price;
-                total += itemTotal;
-
-                const itemRow = document.createElement('tr');
-                itemRow.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>
-                        <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.name}', this.value)">
-                    </td>
-                    <td>$${itemTotal}</td>
-                    <td>
-                        <button onclick="removeFromCheckout('${item.name}')">Remove</button>
-                    </td>
-                `;
-
-                checkoutContainer.appendChild(itemRow);
+            rows.forEach(row => {
+                const qty = parseInt(row.querySelector('.qty-btn').innerText);
+                const price = parseInt(row.getAttribute('data-price'));
+                totalItems += qty;
+                totalPrice += qty * price;
             });
 
-            document.getElementById('total').innerText = `$${total}`;
+            const discount = parseInt(document.getElementById('discount').value) || 0;
+            totalPrice = Math.max(0, totalPrice - discount);
+
+            document.getElementById('total-items').innerText = totalItems;
+            document.getElementById('total').innerText = totalPrice.toFixed(2);
         }
 
-        function updateQuantity(name, quantity) {
-            const item = checkoutItems.find(item => item.name === name);
-            if (item) {
-                item.quantity = parseInt(quantity);
-                updateCheckout();
-            }
+        function confirmCheckout() {
+            alert('Checkout confirmed!');
         }
 
         function filterProducts() {
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            const productButtons = document.querySelectorAll('.product-list button');
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const buttons = document.querySelectorAll('.product-list button');
 
-            productButtons.forEach(button => {
-                const productName = button.textContent.toLowerCase();
-                if (productName.includes(searchQuery)) {
-                    button.style.display = 'flex';
+            buttons.forEach(button => {
+                const text = button.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    button.style.display = '';
                 } else {
                     button.style.display = 'none';
                 }
@@ -305,59 +401,21 @@
         }
 
         function filterByTag(tag) {
-            const productButtons = document.querySelectorAll('.product-item');
+            const buttons = document.querySelectorAll('.product-list button');
 
-            productButtons.forEach(button => {
-                if (tag === 'All' || button.getAttribute('data-tag') === tag) {
-                    button.style.display = 'flex';
+            buttons.forEach(button => {
+                const buttonText = button.innerText.toLowerCase();
+                if (tag === 'all' || buttonText.includes(tag)) {
+                    button.style.display = '';
                 } else {
                     button.style.display = 'none';
                 }
             });
         }
 
-        function goBack() {
-            if (checkoutItems.length > 0) {
-                if (confirm('Are you sure you want to go back? All current items in the checkout will be lost.')) {
-                    window.history.back()
-                }
-            } else {
-                window.history.back();
-            }
-        }
-        document.getElementById('back-button').addEventListener('click', function () {
-            if (checkoutItems.length > 0) {
-                if (confirm('Are you sure you want to go back? All current items in the checkout will be lost.')) {
-                    window.history.back()
-                }
-            } else {
-                window.history.back();
-            }
+        document.getElementById('back-button').addEventListener('click', () => {
+            window.location.href = 'index.html';
         });
-        
-
-        function confirmCheckout() {
-            if (checkoutItems.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-            if (confirm('Are you sure you want to proceed with checkout?')) {
-                checkout();
-            }
-        }
-
-        function checkout() {
-            let totalAmount = 0;
-            checkoutItems.forEach(item => {
-                totalAmount += item.price * item.quantity;
-            });
-
-            alert(`Total checkout amount: $${totalAmount}`);
-
-            // Clear checkout
-            checkoutItems = [];
-            updateCheckout();
-        }
     </script>
 </body>
 </html>

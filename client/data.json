@@ -1,0 +1,18 @@
+[
+  {
+    "date": "2024-08-24T11:50:58.373Z",
+    "items": [
+      {
+        "name": "Membership",
+        "price": 50,
+        "quantity": 1
+      },
+      {
+        "name": "Personal Training",
+        "price": 30,
+        "quantity": 1
+      }
+    ],
+    "total": 80
+  }
+]

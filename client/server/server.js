@@ -86,6 +86,11 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     res.json({ url: imageUrl });
 });
 
+// Endpoint to upload an image
+app.get('/', (req, res) => {
+    res.send('the server is working')
+});
+
 // Endpoint to add a product
 app.post('/api/products', async (req, res) => {
     try {
