@@ -5,40 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym POS System</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f4f5f7;
             margin: 0;
             padding: 0;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            min-width: 1400px;
+            min-height: 100vh;
         }
 
         .pos-container {
             background-color: #ffffff;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
             padding: 20px;
             width: 100%;
             height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
+            
             box-sizing: border-box;
-            border-radius: 15px;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
 
         .products {
-            width: 65%;
+            width: 60%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
             padding: 20px;
             box-sizing: border-box;
+            background-color: #f7f8fa;
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
         }
 
         .checkout {
@@ -47,17 +53,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background-color: #f0f2f5;
+            background-color: #ffffff;
             padding: 20px;
             box-sizing: border-box;
             border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
         }
 
         h1 {
             color: #343a40;
             margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 26px;
+            font-weight: 700;
             text-align: center;
         }
 
@@ -67,15 +74,17 @@
             left: 20px;
             background-color: #ff6b6b;
             color: #ffffff;
-            font-size: 20px;
+            font-size: 22px;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .back-btn:hover {
@@ -87,7 +96,7 @@
             color: white;
             padding: 15px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             width: 100%;
             font-size: 18px;
             cursor: pointer;
@@ -103,15 +112,13 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
-            overflow-y: auto;
-            padding: 10px;
         }
 
         .product-list button {
             background-color: #007bff;
             padding: 20px;
             text-align: center;
-            border-radius: 15px;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             color: white;
@@ -119,34 +126,48 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1 / 1;
+            cursor: pointer;
+            border: none;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .product-list button img {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             margin-bottom: 10px;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .product-list button:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
         }
 
         .search-bar {
             margin-bottom: 20px;
             display: flex;
             justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f7f8fa;
+            padding: 10px 0;
         }
 
         .search-bar input[type="text"] {
-            width: 80%;
-            padding: 15px;
+            width: 90%;
+            padding: 12px;
             font-size: 16px;
-            border-radius: 30px;
+            border-radius: 25px;
             border: 1px solid #ced4da;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-bar input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .tags {
@@ -154,20 +175,22 @@
             gap: 10px;
             margin-bottom: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .tags button {
             background-color: #6c757d;
             color: white;
-            padding: 10px 15px;
+            padding: 8px 15px;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .tags button:hover {
             background-color: #5a6268;
+            transform: scale(1.05);
         }
 
         table {
@@ -177,10 +200,17 @@
             font-size: 16px;
         }
 
-        table th, table td {
+        table th,
+        table td {
             border: 1px solid #dee2e6;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
+        }
+
+        table td:nth-child(3) {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
         }
 
         table th {
@@ -188,14 +218,18 @@
             font-weight: bold;
         }
 
-        .qty-btn {
-            background-color: #ffc107;
+        .qty-btn, .remove-btn {
             border: none;
             color: white;
-            padding: 5px 10px;
+            padding: 8px 12px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .qty-btn {
+            background-color: #ffc107;
         }
 
         .qty-btn:hover {
@@ -204,51 +238,50 @@
 
         .remove-btn {
             background-color: #dc3545;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
         }
 
         .remove-btn:hover {
             background-color: #c82333;
         }
 
-        .checkout-footer {
-            margin-top: auto;
+        .total-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
         }
 
-        .total-container {
-            font-size: 18px;
+        .left-side {
             display: flex;
             flex-direction: column;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
-        .total-container span {
-            display: block;
-            margin: 5px 0;
+        .right-side {
             font-weight: bold;
         }
 
         .discount-input {
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 10px;
-            border: 1px solid #ced4da;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100px;
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
         }
 
+        .discount-input:focus {
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
     <div class="pos-container">
-        <button class="back-btn" id="back-button">&larr;</button>
+        <a href="index.html"><button class="back-btn">&larr;</button></a>
         <div class="checkout">
-            <h1>Checkout</h1>
             <table id="checkout-table">
+                <!-- <h1>Checkout</h1> -->
                 <thead>
                     <tr>
                         <th>#</th>
@@ -259,163 +292,204 @@
                     </tr>
                 </thead>
                 <tbody id="checkout-items">
+                    <!-- Checkout items will be inserted here -->
                 </tbody>
             </table>
 
             <div class="checkout-footer">
                 <div class="total-container">
-                    <span>Total Item(s): <span id="total-items">0</span></span>
-                    <span>Discount: 
-                        <input type="text" class="discount-input" id="discount" placeholder="amount" oninput="calculateTotal()">
-                    </span>
-                    <span>Total: $<span id="total">0</span></span>
+                    <div class="left-side">
+                        <span>Total Item(s): <span id="total-items">0</span></span>
+                        <span>Discount: 
+                            <input type="number" class="discount-input" id="discount" placeholder="Enter discount" oninput="calculateTotal()">
+                        </span>
+                    </div>
+                    <div class="right-side">
+                        <span>Total: $<span id="total">0</span></span>
+                    </div>
                 </div>
-                <button class="checkout-btn" onclick="confirmCheckout()">Confirm Checkout</button>
+                <button class="checkout-btn" id="checkout-btn">Checkout</button>
             </div>
         </div>
 
         <div class="products">
             <div class="search-bar">
-                <input type="text" id="search-bar" placeholder="Search products..." oninput="filterProducts()">
+                <input type="text" id="search-bar" placeholder="Search for a product..." oninput="filterProducts()">
             </div>
             <div class="tags">
-                <button onclick="filterByTag('all')">All</button>
-                <button onclick="filterByTag('membership')">Membership</button>
-                <button onclick="filterByTag('training')">Training</button>
-                <button onclick="filterByTag('classes')">Classes</button>
+                <button onclick="filterProducts('all')">All</button>
+                <button onclick="filterProducts('supplements')">Supplements</button>
+                <button onclick="filterProducts('equipment')">Equipment</button>
             </div>
             <div class="product-list" id="product-list">
-                <button onclick="addToCheckout('Membership', 100)">
-                    <img src="https://via.placeholder.com/100" alt="Membership">
-                    Membership<br>$100
-                </button>
-                <button onclick="addToCheckout('Personal Training', 50)">
-                    <img src="https://via.placeholder.com/100" alt="Personal Training">
-                    Personal Training<br>$50
-                </button>
-                <button onclick="addToCheckout('Yoga Class', 30)">
-                    <img src="https://via.placeholder.com/100" alt="Yoga Class">
-                    Yoga Class<br>$30
-                </button>
-                <button onclick="addToCheckout('Pilates Class', 40)">
-                    <img src="https://via.placeholder.com/100" alt="Pilates Class">
-                    Pilates Class<br>$40
-                </button>
-                <button onclick="addToCheckout('Swimming Class', 25)">
-                    <img src="https://via.placeholder.com/100" alt="Swimming Class">
-                    Swimming Class<br>$25
-                </button>
+                <!-- Products will be dynamically generated here -->
             </div>
         </div>
     </div>
 
     <script>
-        function addToCheckout(item, price) {
-            const table = document.getElementById('checkout-items');
-            const row = document.createElement('tr');
+        const products = [
+            { id: 1, name: 'Whey Protein', price: 50, category: 'supplements', image: 'https://via.placeholder.com/100x100.png?text=Whey+Protein' },
+            { id: 2, name: 'BCAA', price: 30, category: 'supplements', image: 'https://via.placeholder.com/100x100.png?text=BCAA' },
+            { id: 3, name: 'Creatine', price: 25, category: 'supplements', image: 'https://via.placeholder.com/100x100.png?text=Creatine' },
+            { id: 4, name: 'Dumbbells', price: 75, category: 'equipment', image: 'https://via.placeholder.com/100x100.png?text=Dumbbells' },
+            { id: 5, name: 'Treadmill', price: 200, category: 'equipment', image: 'https://via.placeholder.com/100x100.png?text=Treadmill' }
+        ];
 
-            const cell1 = document.createElement('td');
-            cell1.innerText = table.rows.length + 1;
+        const checkoutItems = [];
+        const productList = document.getElementById('product-list');
+        const checkoutTable = document.getElementById('checkout-items');
+        const totalItems = document.getElementById('total-items');
+        const totalPrice = document.getElementById('total');
 
-            const cell2 = document.createElement('td');
-            cell2.innerText = item;
-
-            const cell3 = document.createElement('td');
-            const qtyBtn = document.createElement('button');
-            qtyBtn.className = 'qty-btn';
-            qtyBtn.innerText = 1;
-            qtyBtn.onclick = function() {
-                this.innerText = parseInt(this.innerText) + 1;
-                calculateTotal();
-            };
-            cell3.appendChild(qtyBtn);
-
-            const cell4 = document.createElement('td');
-            cell4.innerText = `$${price}`;
-
-            const cell5 = document.createElement('td');
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-btn';
-            removeBtn.innerText = 'Remove';
-            removeBtn.onclick = function() {
-                table.removeChild(row);
-                updateItemNumbers();
-                calculateTotal();
-            };
-            cell5.appendChild(removeBtn);
-
-            row.appendChild(cell1);
-            row.appendChild(cell2);
-            row.appendChild(cell3);
-            row.appendChild(cell4);
-            row.appendChild(cell5);
-            row.setAttribute('data-price', price);
-
-            table.appendChild(row);
-
-            calculateTotal();
+        function renderProducts(productsToRender) {
+            productList.innerHTML = '';
+            productsToRender.forEach(product => {
+                const productBtn = document.createElement('button');
+                productBtn.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <span>${product.name}</span>
+                    <span>$${product.price}</span>
+                `;
+                productBtn.onclick = () => addToCheckout(product);
+                productList.appendChild(productBtn);
+            });
         }
 
-        function updateItemNumbers() {
-            const rows = document.querySelectorAll('#checkout-items tr');
-            rows.forEach((row, index) => {
-                row.children[0].innerText = index + 1;
+        function addToCheckout(product) {
+            const existingProduct = checkoutItems.find(item => item.id === product.id);
+            if (existingProduct) {
+                existingProduct.qty++;
+            } else {
+                checkoutItems.push({ ...product, qty: 1 });
+            }
+            updateCheckout();
+        }
+
+        function updateCheckout() {
+            checkoutTable.innerHTML = '';
+            
+            let total = 0;
+            checkoutItems.forEach((item, index) => {
+                total += item.price * item.qty;
+                checkoutTable.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>
+                            <button class="qty-btn" onclick="decreaseQty(${item.id})">-</button>
+                            ${item.qty}
+                            <button class="qty-btn" onclick="increaseQty(${item.id})">+</button>
+                        </td>
+                        <td>$${item.price * item.qty}</td>
+                        <td><button class="remove-btn" onclick="removeFromCheckout(${item.id})">x</button></td>
+                    </tr>
+                `;
             });
+        
+            totalItems.innerText = checkoutItems.length;
+            totalPrice.innerText = total;
+        
+            // Reset the discount input and select it
+            const discountInput = document.getElementById('discount');
+            discountInput.value = ''; // Reset the input field
+            discountInput.focus();     // Focus the input field
+            discountInput.select();    // Select the input field
+        }
+        function decreaseQty(productId) {
+            const product = checkoutItems.find(item => item.id === productId);
+            if (product) {
+                if (product.qty > 1) {
+                    product.qty--;
+                } else {
+                    removeFromCheckout(productId);
+                }
+            }
+            updateCheckout();
+        }
+
+        function increaseQty(productId) {
+            const product = checkoutItems.find(item => item.id === productId);
+            if (product) {
+                product.qty++;
+            }
+            updateCheckout();
+        }
+
+        function removeFromCheckout(productId) {
+            const index = checkoutItems.findIndex(item => item.id === productId);
+            if (index > -1) {
+                checkoutItems.splice(index, 1);
+            }
+            updateCheckout();
         }
 
         function calculateTotal() {
-            const rows = document.querySelectorAll('#checkout-items tr');
-            let totalItems = 0;
-            let totalPrice = 0;
+            const totalItems = checkoutItems.reduce((sum, item) => sum + item.qty, 0);
+            const total = checkoutItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('total').textContent = (total - discount).toFixed(2);
+        }
 
-            rows.forEach(row => {
-                const qty = parseInt(row.querySelector('.qty-btn').innerText);
-                const price = parseInt(row.getAttribute('data-price'));
-                totalItems += qty;
-                totalPrice += qty * price;
+
+        function filterProducts(category = 'all') {
+            const searchInput = document.getElementById('search-bar').value.toLowerCase();
+            const filteredProducts = products.filter(product => {
+                const matchesCategory = category === 'all' || product.category === category;
+                const matchesSearch = product.name.toLowerCase().includes(searchInput);
+                return matchesCategory && matchesSearch;
             });
-
-            const discount = parseInt(document.getElementById('discount').value) || 0;
-            totalPrice = Math.max(0, totalPrice - discount);
-
-            document.getElementById('total-items').innerText = totalItems;
-            document.getElementById('total').innerText = totalPrice.toFixed(2);
+            renderProducts(filteredProducts);
         }
 
-        function confirmCheckout() {
-            alert('Checkout confirmed!');
-        }
-
-        function filterProducts() {
-            const query = document.getElementById('search-bar').value.toLowerCase();
-            const buttons = document.querySelectorAll('.product-list button');
-
-            buttons.forEach(button => {
-                const text = button.innerText.toLowerCase();
-                if (text.includes(query)) {
-                    button.style.display = '';
+        document.getElementById('checkout-btn').onclick = async () => {
+            // Get the current date and time
+            const now = new Date();
+            const date = now.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+            const time = now.toTimeString().split(' ')[0]; // 'HH:MM:SS'
+        
+            // Get the total and discount values
+            const total = parseFloat(document.getElementById('total').textContent);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const price = (total + discount).toFixed(2); // Calculate the final total after discount
+        
+            // Prepare the data to send to the backend
+            const saleData = {
+                date: date,
+                time: time, // Include the current time
+                items: checkoutItems,  // Assuming `checkoutItems` is an array of selected items
+                total: total,  // Original total before discount
+                discount: discount, // Discount applied
+                price: price // Final total after discount
+            };
+        
+            try {
+                const response = await fetch('http://localhost:3005/api/sale', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(saleData)
+                });
+        
+                if (response.ok) {
+                    const result = await response.json();
+                    alert('Checkout completed successfully!');
+                    console.log('Sale saved:', result);
+                    checkoutItems.length = 0; 
+                    updateCheckout(); 
                 } else {
-                    button.style.display = 'none';
+                    alert('Failed to complete checkout. Please try again.');
+                    console.error('Failed to save sale:', response.statusText);
                 }
-            });
-        }
-
-        function filterByTag(tag) {
-            const buttons = document.querySelectorAll('.product-list button');
-
-            buttons.forEach(button => {
-                const buttonText = button.innerText.toLowerCase();
-                if (tag === 'all' || buttonText.includes(tag)) {
-                    button.style.display = '';
-                } else {
-                    button.style.display = 'none';
-                }
-            });
-        }
-
-        document.getElementById('back-button').addEventListener('click', () => {
-            window.location.href = 'index.html';
-        });
+            } catch (error) {
+                console.error('Error during checkout:', error);
+                alert('An error occurred while processing the checkout. Please try again.');
+            }
+        };
+                        // Initial render
+        renderProducts(products);
     </script>
 </body>
 </html>

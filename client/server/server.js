@@ -39,11 +39,12 @@ const upload = multer({ storage: storage });
 
 // Define schema
 const SaleSchema = new mongoose.Schema({
-    date: String,
+    date: String,   // Store date in 'YYYY-MM-DD' format
+    time: String,   // Store time in 'HH:MM:SS' format
     items: Array,
-    total: Number
+    total: Number,
+    price: Number
 });
-
 const Sale = mongoose.model('Sale', SaleSchema);
 
 // Endpoint to handle adding a sale
@@ -84,11 +85,6 @@ const Product = mongoose.model('Product', ProductSchema);
 app.post('/api/upload', upload.single('image'), (req, res) => {
     const imageUrl = `http://localhost:3005/uploads/${req.file.filename}`;
     res.json({ url: imageUrl });
-});
-
-// Endpoint to upload an image
-app.get('/', (req, res) => {
-    res.send('the server is working')
 });
 
 // Endpoint to add a product
