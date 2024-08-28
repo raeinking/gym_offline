@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
     <title>Used Money Tracker</title>
     <style>
         body {
@@ -92,53 +92,32 @@
 </head>
 <body>
     <div class="container">
-        <h1>Used Money Tracker</h1>
+        <h1>add Tag</h1>
 
         <div class="form-group">
-            <label for="bill-name">Bill Name:</label>
-            <input type="text" id="bill-name" placeholder="e.g., Electricity">
+            <label for="bill-name">Tag Name:</label>
+            <input type="text" id="bill-name" placeholder="e.g., service">
         </div>
-
-        <div class="form-group">
-            <label for="bill-amount">Amount:</label>
-            <input type="number" id="bill-amount" placeholder="e.g., 39">
-        </div>
-
         <div class="form-group">
             <button onclick="addBill()">Add Bill</button>
         </div>
-
-        <h2>Bill Payments</h2>
-        <table class="bill-list" id="bill-list">
-            <thead>
-                <tr>
-                    <th>Bill Name</th>
-                    <th>Amount ($)</th>
-                    <th>Date Added</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Bills will be dynamically added here -->
-            </tbody>
-        </table>
     </div>
 
     <script>
         async function addBill() {
             const billName = document.getElementById('bill-name').value;
-            const billAmount = document.getElementById('bill-amount').value;
         
-            if (billName === '' || billAmount === '') {
+            if (billName === '') {
                 alert('Please fill in both fields.');
                 return;
             }
         
-            const response = await fetch('http://localhost:3005/add-bill', {
+            const response = await fetch('http://localhost:3005/add-tag', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name: billName, amount: billAmount })
+                body: JSON.stringify({ name: billName })
             });
         
             if (response.ok) {

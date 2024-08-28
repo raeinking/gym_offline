@@ -6,7 +6,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-
 const app = express();
 const port = 3005;
 app.use(cors());
@@ -26,16 +25,22 @@ db.once('open', () => {
     console.log('Connected to MongoDB');
 });
 
+// Ensure the upload directory exists
+const uploadDir = path.join(__dirname, 'server/uploads');
+
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: storage });
-
 
 // Define schema
 const SaleSchema = new mongoose.Schema({
@@ -99,8 +104,6 @@ app.post('/api/products', async (req, res) => {
     }
 });
 
-
-
 const billSchema = new mongoose.Schema({
     name: String,
     amount: Number,
@@ -108,6 +111,40 @@ const billSchema = new mongoose.Schema({
 });
 
 const Bill = mongoose.model('Bill', billSchema);
+
+const tagSchema = new mongoose.Schema({
+    name: String,
+});
+
+const Tag = mongoose.model('Tag', tagSchema);
+
+app.post('/add-tag', async (req, res) => {
+    let { name } = req.body;
+
+    // Capitalize the first letter and make the rest lowercase
+    name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+    const newTag = new Tag({ name });
+    await newTag.save();
+    res.status(201).send(newTag);
+});
+
+app.get('/api/tags', async (req, res) => {
+    try {
+        const tags = await Tag.find(); // Fetch all tags from the database
+        res.status(200).json(tags);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch tags' });
+    }
+});
+app.get('/api/products', async (req, res) => {
+    try {
+        const tags = await Product.find(); // Fetch all tags from the database
+        res.status(200).json(tags);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch tags' });
+    }
+});
 
 app.post('/add-bill', async (req, res) => {
     const { name, amount } = req.body;
@@ -121,9 +158,9 @@ app.get('/bills', async (req, res) => {
     res.status(200).json(bills);
 });
 
-
 // Serve static files from 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadDir));
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

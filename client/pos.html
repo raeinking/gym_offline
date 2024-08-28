@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
     <title>Gym POS System</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -278,7 +280,7 @@
 </head>
 <body>
     <div class="pos-container">
-        <a href="index.html"><button class="back-btn">&larr;</button></a>
+        <button class="back-btn" id="back-button">&larr;</button>
         <div class="checkout">
             <table id="checkout-table">
                 <!-- <h1>Checkout</h1> -->
@@ -301,7 +303,15 @@
                     <div class="left-side">
                         <span>Total Item(s): <span id="total-items">0</span></span>
                         <span>Discount: 
-                            <input type="number" class="discount-input" id="discount" placeholder="Enter discount" oninput="calculateTotal()">
+                            <input 
+                                type="number" 
+                                class="discount-input" 
+                                id="discount" 
+                                placeholder="Enter discount" 
+                                oninput="calculateTotal()" 
+                                onfocus="this.select()" 
+                                min="0" 
+                                max="100">
                         </span>
                     </div>
                     <div class="right-side">
@@ -320,6 +330,9 @@
                 <button onclick="filterProducts('all')">All</button>
                 <button onclick="filterProducts('supplements')">Supplements</button>
                 <button onclick="filterProducts('equipment')">Equipment</button>
+                <button onclick="filterProducts('Fast food')">Equipment</button>
+                <button onclick="filterProducts('Drink')">Drink</button>
+                <button onclick="filterProducts('Trend')">Trend</button>
             </div>
             <div class="product-list" id="product-list">
                 <!-- Products will be dynamically generated here -->
@@ -328,102 +341,114 @@
     </div>
 
     <script>
-        const products = [
-            { id: 1, name: 'Whey Protein', price: 50, category: 'supplements', image: 'https://via.placeholder.com/100x100.png?text=Whey+Protein' },
-            { id: 2, name: 'BCAA', price: 30, category: 'supplements', image: 'https://via.placeholder.com/100x100.png?text=BCAA' },
-            { id: 3, name: 'Creatine', price: 25, category: 'supplements', image: 'https://via.placeholder.com/100x100.png?text=Creatine' },
-            { id: 4, name: 'Dumbbells', price: 75, category: 'equipment', image: 'https://via.placeholder.com/100x100.png?text=Dumbbells' },
-            { id: 5, name: 'Treadmill', price: 200, category: 'equipment', image: 'https://via.placeholder.com/100x100.png?text=Treadmill' }
-        ];
-
-        const checkoutItems = [];
-        const productList = document.getElementById('product-list');
-        const checkoutTable = document.getElementById('checkout-items');
-        const totalItems = document.getElementById('total-items');
-        const totalPrice = document.getElementById('total');
-
-        function renderProducts(productsToRender) {
-            productList.innerHTML = '';
+        let products = []; // To store the list of products fetched from the API
+    const checkoutItems = []; // Array to store checkout items
+    
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://localhost:3005/api/products');
+                if (response.ok) {
+                    products = await response.json();
+                    console.log(products);
+                    updateProductList(products); // Initially display all products
+                } else {
+                    alert('Failed to fetch products. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error during fetch:', error);
+                alert('An error occurred while fetching products. Please try again.');
+            }
+        }
+    
+        function updateProductList(productsToRender) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = ''; // Clear existing content
+            
+            // Render products as buttons
             productsToRender.forEach(product => {
                 const productBtn = document.createElement('button');
+                productBtn.className = 'product-button'; // Optional: Add a class for styling
+                productBtn.id = `product-${product.id}`; // Set unique ID based on product ID
                 productBtn.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}">
+                    <img src="${product.image}" alt="${product.name}" style="max-width: 100%; height: auto;">
                     <span>${product.name}</span>
                     <span>$${product.price}</span>
                 `;
+                // Use an arrow function to bind the current product object
                 productBtn.onclick = () => addToCheckout(product);
                 productList.appendChild(productBtn);
             });
         }
-
+    
         function addToCheckout(product) {
-            const existingProduct = checkoutItems.find(item => item.id === product.id);
-            if (existingProduct) {
-                existingProduct.qty++;
+            const existingItem = checkoutItems.find(item => item._id === product._id);
+            if (existingItem) {
+                existingItem.qty += 1;
             } else {
                 checkoutItems.push({ ...product, qty: 1 });
             }
             updateCheckout();
         }
-
+        
         function updateCheckout() {
-            checkoutTable.innerHTML = '';
-            
+            const checkoutTableBody = document.getElementById('checkout-items');
+            checkoutTableBody.innerHTML = ''; // Clear existing rows
+        
             let total = 0;
             checkoutItems.forEach((item, index) => {
                 total += item.price * item.qty;
-                checkoutTable.innerHTML += `
+                checkoutTableBody.innerHTML += `
                     <tr>
                         <td>${index + 1}</td>
                         <td>${item.name}</td>
                         <td>
-                            <button class="qty-btn" onclick="decreaseQty(${item.id})">-</button>
+                            <button class="qty-btn" onclick="decreaseQty('${item._id}')">-</button>
                             ${item.qty}
-                            <button class="qty-btn" onclick="increaseQty(${item.id})">+</button>
+                            <button class="qty-btn" onclick="increaseQty('${item._id}')">+</button>
                         </td>
-                        <td>$${item.price * item.qty}</td>
-                        <td><button class="remove-btn" onclick="removeFromCheckout(${item.id})">x</button></td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td><button class="remove-btn" onclick="removeFromCheckout('${item._id}')">x</button></td>
                     </tr>
                 `;
             });
         
-            totalItems.innerText = checkoutItems.length;
-            totalPrice.innerText = total;
-        
-            // Reset the discount input and select it
+            document.getElementById('total-items').innerText = checkoutItems.length;
+            calculateTotal(); // Ensure total is updated here
             const discountInput = document.getElementById('discount');
-            discountInput.value = ''; // Reset the input field
-            discountInput.focus();     // Focus the input field
-            discountInput.select();    // Select the input field
+            discountInput.value = ''; // Reset value but keep it interactive
+            discountInput.disabled = false; // Ensure it is not disabled
+            discountInput.focus();
+            discountInput.select();
         }
+    
         function decreaseQty(productId) {
-            const product = checkoutItems.find(item => item.id === productId);
+            const product = checkoutItems.find(item => item._id === productId);
             if (product) {
                 if (product.qty > 1) {
                     product.qty--;
                 } else {
                     removeFromCheckout(productId);
                 }
+                updateCheckout();
             }
-            updateCheckout();
         }
-
+        
         function increaseQty(productId) {
-            const product = checkoutItems.find(item => item.id === productId);
+            const product = checkoutItems.find(item => item._id === productId);
             if (product) {
                 product.qty++;
+                updateCheckout();
             }
-            updateCheckout();
         }
-
+        
         function removeFromCheckout(productId) {
-            const index = checkoutItems.findIndex(item => item.id === productId);
+            const index = checkoutItems.findIndex(item => item._id === productId);
             if (index > -1) {
                 checkoutItems.splice(index, 1);
             }
             updateCheckout();
         }
-
+        
         function calculateTotal() {
             const totalItems = checkoutItems.reduce((sum, item) => sum + item.qty, 0);
             const total = checkoutItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -431,37 +456,38 @@
             document.getElementById('total-items').textContent = totalItems;
             document.getElementById('total').textContent = (total - discount).toFixed(2);
         }
-
-
-        function filterProducts(category = 'all') {
-            const searchInput = document.getElementById('search-bar').value.toLowerCase();
-            const filteredProducts = products.filter(product => {
-                const matchesCategory = category === 'all' || product.category === category;
-                const matchesSearch = product.name.toLowerCase().includes(searchInput);
-                return matchesCategory && matchesSearch;
-            });
-            renderProducts(filteredProducts);
-        }
-
+    
+    function filterProducts(tag) {
+        const searchInput = document.getElementById('search-bar').value.toLowerCase();
+        const filteredProducts = products.filter(product => {
+        // Default to an empty array if 'product.tags' is undefined
+        const productTags = product.tags || [];
+        // Check if 'tag' is 'all' or if 'tag' is included in the product's tags array
+        const matchesTag = tag === 'all' || productTags.includes(tag);
+        // Check if the product name includes the search input
+        const matchesSearch = product.name.toLowerCase().includes(searchInput);
+        // Return true if both conditions are met
+        return matchesTag && matchesSearch;
+    });
+    updateProductList(filteredProducts);
+    }
+    
         document.getElementById('checkout-btn').onclick = async () => {
-            // Get the current date and time
             const now = new Date();
             const date = now.toISOString().split('T')[0]; // 'YYYY-MM-DD'
             const time = now.toTimeString().split(' ')[0]; // 'HH:MM:SS'
-        
-            // Get the total and discount values
+            
             const total = parseFloat(document.getElementById('total').textContent);
             const discount = parseFloat(document.getElementById('discount').value) || 0;
-            const price = (total + discount).toFixed(2); // Calculate the final total after discount
-        
-            // Prepare the data to send to the backend
+            const price = (total + discount).toFixed(2); // Calculate the final total before discount
+            
             const saleData = {
                 date: date,
-                time: time, // Include the current time
-                items: checkoutItems,  // Assuming `checkoutItems` is an array of selected items
-                total: total,  // Original total before discount
-                discount: discount, // Discount applied
-                price: price // Final total after discount
+                time: time,
+                items: checkoutItems,
+                total: total,
+                discount: discount,
+                price: price
             };
         
             try {
@@ -474,22 +500,30 @@
                 });
         
                 if (response.ok) {
-                    const result = await response.json();
-                    alert('Checkout completed successfully!');
-                    console.log('Sale saved:', result);
-                    checkoutItems.length = 0; 
-                    updateCheckout(); 
+                    checkoutItems.length = 0;
+                    updateCheckout();
                 } else {
-                    alert('Failed to complete checkout. Please try again.');
-                    console.error('Failed to save sale:', response.statusText);
+                    alert('Failed to checkout. Please try again.');
                 }
             } catch (error) {
                 console.error('Error during checkout:', error);
-                alert('An error occurred while processing the checkout. Please try again.');
+                alert('An error occurred during checkout. Please try again.');
             }
         };
-                        // Initial render
-        renderProducts(products);
-    </script>
+    
+        document.getElementById('back-button').addEventListener('click', function () {
+            if (confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
+                window.history.back();
+            }
+        });
+        document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            document.getElementById('checkout-btn').click();
+            updateCheckout()
+        }
+    });
+    
+        fetchProducts(); // Fetch and render products on initial load
+            </script>
 </body>
 </html>
