@@ -180,20 +180,23 @@
             flex-wrap: wrap;
         }
 
-        .tags button {
-            background-color: #6c757d;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
+        .tags button.selected {
+    background-color: #007bff;
+}
 
-        .tags button:hover {
-            background-color: #5a6268;
-            transform: scale(1.05);
-        }
+        .tags button {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.1s ease, transform 0.1s ease;
+}
+.tags button:hover {
+    background-color: #5a6268;
+    transform: scale(1.05);
+}
 
         table {
             width: 100%;
@@ -326,13 +329,8 @@
             <div class="search-bar">
                 <input type="text" id="search-bar" placeholder="Search for a product..." oninput="filterProducts()">
             </div>
-            <div class="tags">
-                <button onclick="filterProducts('all')">All</button>
-                <button onclick="filterProducts('supplements')">Supplements</button>
-                <button onclick="filterProducts('equipment')">Equipment</button>
-                <button onclick="filterProducts('Fast food')">Equipment</button>
-                <button onclick="filterProducts('Drink')">Drink</button>
-                <button onclick="filterProducts('Trend')">Trend</button>
+            <div class="tags" id="tagsContainer">
+                <!-- Buttons will be dynamically generated here -->
             </div>
             <div class="product-list" id="product-list">
                 <!-- Products will be dynamically generated here -->
@@ -342,14 +340,63 @@
 
     <script>
         let products = []; // To store the list of products fetched from the API
-    const checkoutItems = []; // Array to store checkout items
+        const checkoutItems = []; // Array to store checkout items
+        const tagsContainer = document.getElementById('tagsContainer');
+    
+        // Function to fetch tags from API
+        function fetchTags() {
+            const tagsApiUrl = 'http://localhost:3005/api/tags'; // Replace with your actual API URL for tags
+    
+            fetch(tagsApiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    displayTags(data);
+                })
+                .catch(error => console.error('Error fetching tags:', error));
+        }
+    
+        function displayTags(tags) {
+    // Add 'All' button
+    const allButton = document.createElement('button');
+    allButton.textContent = 'All';
+    allButton.className = 'selected'; // Set as selected by default
+    allButton.onclick = () => {
+        filterProducts('');
+        selectTag(allButton);
+    };
+    tagsContainer.appendChild(allButton);
+
+    // Create buttons for each tag fetched from API
+    tags.forEach(tag => {
+        const button = document.createElement('button');
+        button.textContent = tag.name;
+        button.onclick = () => {
+            filterProducts(tag.name);
+            selectTag(button);
+        };
+        tagsContainer.appendChild(button);
+    });
+
+    // Fetch all products initially
+    fetchProducts();
+}
+
+function selectTag(selectedButton) {
+    // Remove 'selected' class from all buttons
+    const buttons = tagsContainer.querySelectorAll('button');
+    buttons.forEach(button => button.classList.remove('selected'));
+
+    // Add 'selected' class to the clicked button
+    selectedButton.classList.add('selected');
+}
+
+
     
         async function fetchProducts() {
             try {
                 const response = await fetch('http://localhost:3005/api/products');
                 if (response.ok) {
                     products = await response.json();
-                    console.log(products);
                     updateProductList(products); // Initially display all products
                 } else {
                     alert('Failed to fetch products. Please try again.');
@@ -364,17 +411,15 @@
             const productList = document.getElementById('product-list');
             productList.innerHTML = ''; // Clear existing content
             
-            // Render products as buttons
             productsToRender.forEach(product => {
                 const productBtn = document.createElement('button');
-                productBtn.className = 'product-button'; // Optional: Add a class for styling
-                productBtn.id = `product-${product.id}`; // Set unique ID based on product ID
+                productBtn.className = 'product-button';
+                productBtn.id = `product-${product.id}`;
                 productBtn.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" style="max-width: 100%; height: auto;">
                     <span>${product.name}</span>
                     <span>$${product.price}</span>
                 `;
-                // Use an arrow function to bind the current product object
                 productBtn.onclick = () => addToCheckout(product);
                 productList.appendChild(productBtn);
             });
@@ -413,12 +458,12 @@
             });
         
             document.getElementById('total-items').innerText = checkoutItems.length;
-            calculateTotal(); // Ensure total is updated here
             const discountInput = document.getElementById('discount');
             discountInput.value = ''; // Reset value but keep it interactive
             discountInput.disabled = false; // Ensure it is not disabled
             discountInput.focus();
             discountInput.select();
+            calculateTotal();
         }
     
         function decreaseQty(productId) {
@@ -456,22 +501,16 @@
             document.getElementById('total-items').textContent = totalItems;
             document.getElementById('total').textContent = (total - discount).toFixed(2);
         }
-    
-    function filterProducts(tag) {
-        const searchInput = document.getElementById('search-bar').value.toLowerCase();
-        const filteredProducts = products.filter(product => {
-        // Default to an empty array if 'product.tags' is undefined
-        const productTags = product.tags || [];
-        // Check if 'tag' is 'all' or if 'tag' is included in the product's tags array
-        const matchesTag = tag === 'all' || productTags.includes(tag);
-        // Check if the product name includes the search input
-        const matchesSearch = product.name.toLowerCase().includes(searchInput);
-        // Return true if both conditions are met
-        return matchesTag && matchesSearch;
-    });
+        function filterProducts(tag = '') {
+    const searchInput = document.getElementById('search-bar').value.toLowerCase();
+
+    const filteredProducts = products.filter(product => 
+        (tag === '' || product.tags.includes(tag)) && 
+        product.name.toLowerCase().includes(searchInput)
+    );
+
     updateProductList(filteredProducts);
-    }
-    
+}
         document.getElementById('checkout-btn').onclick = async () => {
             const now = new Date();
             const date = now.toISOString().split('T')[0]; // 'YYYY-MM-DD'
@@ -523,7 +562,8 @@
         }
     });
     
-        fetchProducts(); // Fetch and render products on initial load
+        fetchTags();
+
             </script>
 </body>
 </html>
