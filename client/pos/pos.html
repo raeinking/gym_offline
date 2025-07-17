@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym POS System</title>
+    <link rel="stylesheet" href="pos.css">
+</head>
+<body>
+    <div class="pos-container">
+        <button class="back-btn" id="back-button">&larr;</button>
+        
+        <!-- start this side is left side  -->
+        <div class="checkout">
+            <table id="checkout-table">
+                <!-- <h1>Checkout</h1> -->
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="checkout-items">
+                    <!-- Checkout items will be inserted here -->
+                </tbody>
+            </table>
+        
+            <div class="checkout-footer">
+                <div class="total-container">
+                    <div class="left-side">
+                        <span>Total Item(s): <span id="total-items">0</span></span>
+                        <span>Discount: 
+                            <input 
+                                type="number" 
+                                class="discount-input" 
+                                id="discount" 
+                                placeholder="Enter discount"
+                                oninput="calculateTotal()"
+                                onfocus="this.select()"
+                                min="0"
+                                max="100">
+                        </span>
+                    </div>
+                    <div class="right-side">
+                        <span>Total: $<span id="total">0</span></span>
+                    </div>
+                </div>
+                <button class="checkout-btn" id="checkout-btn">Checkout</button>
+            </div>
+        </div>
+        <!-- end this side is left side  -->
+
+        <!-- start this is the right side of the pos -->
+        <div class="products">
+            <div class="search-bar">
+                <input type="text" id="search-bar" placeholder="Search for a product..." oninput="filterProducts()">
+            </div>
+            <div class="tags" id="tagsContainer">
+                <!-- Buttons will be dynamically generated here -->
+            </div>
+            <div class="product-list" id="product-list">
+                <!-- Products will be dynamically generated here -->
+            </div>
+        </div>
+        <!-- end this is the right side of the pos -->
+
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+</html>
