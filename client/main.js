@@ -99,19 +99,19 @@ app.on('ready', () => {
       input: process.stdin,
       output: process.stdout,
     });
+    startServer(); // Start the server before creating the window
+    createWindow();
 
-    rl.question('Please enter the unique ID: ', (userInput) => {
-      if (userInput === uniqueId) {
-        fs.writeFileSync(filePath, encryptedUniqueId, 'utf8');
-        console.log('Correct ID. New file created. Application can run.');
-        startServer(); // Start the server before creating the window
-        createWindow();
-      } else {
-        console.log('Incorrect ID. Exiting application.');
-        app.quit();
-      }
-      rl.close();
-    });
+    // rl.question('Please enter the unique ID: ', (userInput) => {
+    //   if (userInput === uniqueId) {
+    //     fs.writeFileSync(filePath, encryptedUniqueId, 'utf8');
+    //     console.log('Correct ID. New file created. Application can run.');
+    //   } else {
+    //     console.log('Incorrect ID. Exiting application.');
+    //     app.quit();
+    //   }
+    //   rl.close();
+    // });
   }
 });
 

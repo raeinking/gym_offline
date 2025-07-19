@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/gymPOS', {
+mongoose.connect('mongodb+srv://pos:pos@pos.yenrc3s.mongodb.net/', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });

@@ -119,6 +119,44 @@
             background-color: #d0d0d0;
         }
 
+            .tag-chip {
+        display: inline-block;
+        background: #e0e0e0;
+        padding: 5px 10px;
+        margin: 4px;
+        border-radius: 15px;
+        font-size: 14px;
+        position: relative;
+    }
+
+    .tag-chip button {
+        background: none;
+        border: none;
+        margin-left: 5px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    #tag-suggestions {
+        border: 1px solid #ccc;
+        max-height: 100px;
+        overflow-y: auto;
+        position: absolute;
+        background: white;
+        width: 200px;
+        z-index: 100;
+    }
+
+    .suggestion-item {
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 20px;
@@ -205,11 +243,155 @@
                 <div class="tag-container" id="tag-container"></div>
             </div>
             <div class="form-group">
+    <label for="tags-input">Tags</label>
+    <input type="text" id="tags-input" placeholder="Type and press enter..." autocomplete="off" />
+    <div id="tag-suggestions"></div>
+    <div class="tag-container" id="tag-container"></div>
+</div>
+
+            <div class="form-group">
                 <button type="submit">Add Product</button>
             </div>
         </form>
     </div>
     <script>
+            let existingTags = [];
+
+    async function fetchTags() {
+        try {
+            const response = await fetch('http://localhost:3005/api/tags');
+            const tags = await response.json();
+            existingTags = tags.map(tag => tag.name.toLowerCase());
+        } catch (err) {
+            console.error('Error loading tags:', err);
+        }
+    }
+
+    const tagInput = document.getElementById('tags-input');
+    const tagContainer = document.getElementById('tag-container');
+    const suggestionsBox = document.getElementById('tag-suggestions');
+
+    let selectedTags = new Set();
+
+    function addTag(tagName) {
+        const cleanedTag = tagName.trim().toLowerCase();
+        if (!cleanedTag || selectedTags.has(cleanedTag)) return;
+
+        selectedTags.add(cleanedTag);
+
+        const tagEl = document.createElement('span');
+        tagEl.className = 'tag-chip';
+        tagEl.textContent = cleanedTag;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'x';
+        removeBtn.onclick = () => {
+            selectedTags.delete(cleanedTag);
+            tagContainer.removeChild(tagEl);
+        };
+
+        tagEl.appendChild(removeBtn);
+        tagContainer.appendChild(tagEl);
+        tagInput.value = '';
+        suggestionsBox.innerHTML = '';
+    }
+
+    tagInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            addTag(this.value);
+        }
+    });
+
+    tagInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        suggestionsBox.innerHTML = '';
+
+        if (query.length > 0) {
+            const matches = existingTags.filter(tag => tag.includes(query) && !selectedTags.has(tag));
+            matches.forEach(tag => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = tag;
+                suggestion.className = 'suggestion-item';
+                suggestion.onclick = () => addTag(tag);
+                suggestionsBox.appendChild(suggestion);
+            });
+        }
+    });
+
+    // Hook into form submission
+    document.getElementById('add-product-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const imageFile = formData.get('image');
+
+        const imageFormData = new FormData();
+        imageFormData.append('image', imageFile);
+
+        try {
+            const imageResponse = await fetch('http://localhost:3005/api/upload', {
+                method: 'POST',
+                body: imageFormData
+            });
+
+            if (!imageResponse.ok) throw new Error('Image upload failed');
+            const imageResult = await imageResponse.json();
+
+            const newTags = Array.from(selectedTags);
+            const finalTags = [];
+
+            // Step 1: check existing tags
+            const tagCheckRes = await fetch('http://localhost:3005/api/tags');
+            const tagList = await tagCheckRes.json();
+            const existingTagNames = tagList.map(t => t.name.toLowerCase());
+
+            for (const tag of newTags) {
+                if (!existingTagNames.includes(tag)) {
+                    const createTagRes = await fetch('http://localhost:3005/api/tags', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: tag })
+                    });
+                    const createdTag = await createTagRes.json();
+                    finalTags.push(createdTag.name);
+                } else {
+                    finalTags.push(tag);
+                }
+            }
+
+            const productData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                price: parseFloat(formData.get('price')),
+                quantity: parseInt(formData.get('quantity')),
+                serialNumber: formData.get('serialNumber'),
+                qrCode: formData.get('qrCode'),
+                image: imageResult.url,
+                tags: finalTags
+            };
+
+            const productResponse = await fetch('http://localhost:3005/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            });
+
+            if (!productResponse.ok) throw new Error('Failed to add product');
+            alert('Product added successfully!');
+            this.reset();
+            tagContainer.innerHTML = '';
+            selectedTags.clear();
+            document.getElementById('image-preview').style.display = 'none';
+        } catch (error) {
+            console.error(error);
+            alert('There was an error adding the product.');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', fetchTags);
+
         // Fetch tags from the server
         async function fetchTags() {
             try {
